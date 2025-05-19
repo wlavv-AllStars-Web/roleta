@@ -47,6 +47,10 @@ try {
             radial-gradient(var(--color1), black);
         background-size: cover;
     }
+
+    button i {
+        margin-right: 6px;
+    }
 </style>
 
 <body>
@@ -85,7 +89,7 @@ try {
 
     <div class="reset-container" style="margin-top: 20px;">
         <a href="reinitialiser_resultats.php?lang=<?= $lang ?>" onclick="return confirm('<?= __menu('confirm_reset') ?>');">
-            <button class="btn-red"><?= __menu('reset_results') ?></button>
+            <button class="btn-red"><i class="fas fa-rotate-left"></i> <?= __menu('reset_results') ?></button>
         </a>
     </div>
 
@@ -104,18 +108,18 @@ try {
                     <td><?= htmlspecialchars($prize['name']) ?></td>
                     <td><?= $prize['total_stock'] ?></td>
                     <td>
-    <a href="modifier_prix.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>">
-        <button class="btn-red"><?= __menu('edit') ?></button>
-    </a>
-    <a href="supprimer_prix.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>" onclick="return confirm('<?= __menu('confirm_delete') ?>');">
-        <button class="btn-red"><?= __menu('delete') ?></button>
-    </a>
-    <a href="toggle_active.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>">
-        <button class="<?= $prize['active'] ? 'btn-red' : 'btn-green' ?>">
-            <?= $prize['active'] ? __menu('deactivate') : __menu('activate') ?>
-        </button>
-    </a>
-</td>
+                        <a href="modifier_prix.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>">
+                            <button class="btn-red"><i class="fas fa-pen"></i> <?= __menu('edit') ?></button>
+                        </a>
+                        <a href="supprimer_prix.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>" onclick="return confirm('<?= __menu('confirm_delete') ?>');">
+                            <button class="btn-red"><i class="fas fa-trash"></i> <?= __menu('delete') ?></button>
+                        </a>
+                        <a href="toggle_active.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>">
+                            <button class="<?= $prize['active'] ? 'btn-red' : 'btn-green' ?>">
+                                <i class="fas fa-toggle-<?= $prize['active'] ? 'off' : 'on' ?>"></i>
+                                <?= $prize['active'] ? __menu('deactivate') : __menu('activate') ?>
+                            </button>
+                        </a>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -124,34 +128,38 @@ try {
 
     <div class="add-prize-container" style="margin-top: 20px;">
         <a href="ajouter_prix.php?lang=<?= $lang ?>">
-            <button class="btn-red"><?= __menu('add_prize') ?></button>
+            <button class="btn-red"><i class="fas fa-plus"></i> <?= __menu('add_prize') ?></button>
         </a>
     </div>
 
     <h3><?= __menu('customize_wheel') ?? "Personnaliser la roue" ?></h3>
     <form action="modifier_config.php" method="post" enctype="multipart/form-data" style="margin-bottom: 40px;">
-        <div>
-            <label><?= __menu('background_image') ?> :</label><br>
-            <input type="file" name="background">
+        <div class="form-row">
+            <div>
+                <label><?= __menu('background_image') ?> :</label>
+                <input type="file" name="background">
+            </div>
+            <div>
+                <label><?= __menu('logo_image') ?> :</label>
+                <input type="file" name="logo">
+            </div>
         </div>
-        <div>
-            <label><?= __menu('logo_image') ?> :</label><br>
-            <input type="file" name="logo">
+        <div class="form-row">
+            <div>
+                <label><?= __menu('slice_color1') ?> :</label>
+                <input type="color" name="color1" value="<?= htmlspecialchars($color1) ?>">
+            </div>
+            <div>
+                <label><?= __menu('slice_color2') ?> :</label>
+                <input type="color" name="color2" value="<?= htmlspecialchars($color2) ?>">
+            </div>
         </div>
-        <div>
-            <label><?= __menu('slice_color1') ?> :</label><br>
-            <input type="color" name="color1" value="<?= htmlspecialchars($color1) ?>">
-        </div>
-        <div>
-            <label><?= __menu('slice_color2') ?> :</label><br>
-            <input type="color" name="color2" value="<?= htmlspecialchars($color2) ?>">
-        </div>
-        <button type="submit" class="btn-red"><?= __menu('save_changes') ?></button>
+        <button type="submit" class="btn-red"><i class="fas fa-save"></i> <?= __menu('save_changes') ?></button>
     </form>
 
     <div class="admin-buttons">
-        <a href="login.php?lang=<?= $lang ?>"><button class="btn-red"><?= __menu('logout') ?></button></a>
-        <a href="roleta.php?lang=<?= $lang ?>"><button class="btn-red"><?= __menu('wheel') ?></button></a>
+        <a href="login.php?lang=<?= $lang ?>"><button class="btn-red"><i class="fas fa-sign-out-alt"></i> <?= __menu('logout') ?></button></a>
+        <a href="roleta.php?lang=<?= $lang ?>"><button class="btn-red"><i class="fas fa-circle-notch"></i> <?= __menu('wheel') ?></button></a>
     </div>
 </div>
 </body>
