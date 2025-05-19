@@ -1,0 +1,183 @@
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url('default-bg.jpg') no-repeat center center,
+                radial-gradient(var(--color1), black);
+    background-size: cover;
+    color: #fff;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* =============== Container =============== */
+.login-container {
+    background-color: rgba(0, 0, 0, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    box-shadow: 0 0 30px var(--color1);
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+/* =============== Titres =============== */
+.login-container h2 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+    position: relative;
+    padding-bottom: 10px;
+    text-shadow: 2px 2px 4px #000;
+}
+
+.login-container h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--color1), transparent);
+}
+
+.login-container h3 {
+    margin: 25px 0 15px;
+    font-size: 1.5rem;
+    border-left: 4px solid var(--color1);
+    padding-left: 10px;
+    text-align: left;
+}
+
+/* =============== Tableaux =============== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.95rem;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--color1);
+    color: white;
+}
+
+td {
+    background-color: rgba(30, 30, 30, 0.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+tr:hover td {
+    background-color: rgba(50, 50, 50, 0.9);
+}
+
+/* =============== Scroll =============== */
+.history-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.history-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--color1);
+}
+
+/* =============== Formulaire =============== */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+input[type="color"] {
+    border: none;
+    background: none;
+    width: 60px;
+    height: 40px;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 10px;
+}
+
+input[type="file"] {
+    padding: 6px 10px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    width: 100%;
+    max-width: 300px;
+}
+
+/* Boutons communs */
+button,
+input[type="submit"],
+a.btn-red,
+a.btn-green {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+
+    /* Taille uniforme */
+    width: 100%;         /* s'adapte à leur conteneur */
+    max-width: 250px;    /* fixe une largeur égale à tous */
+    box-sizing: border-box;
+}
+
+/* Boutons rouges */
+button.btn-red,
+input[type="submit"].btn-red,
+a.btn-red {
+    background-color: var(--color1) !important;
+}
+
+/* Boutons verts */
+button.btn-green,
+a.btn-green {
+    background-color: var(--color2) !important;
+}
+
+/* Hover : sans scale (évite scrollbar) */
+button:hover,
+input[type="submit"]:hover,
+a.btn-red:hover,
+a.btn-green:hover {
+    filter: brightness(0.9);
+    box-shadow: 0 0 10px currentColor;
+}
+
+form button,
+form input[type="submit"] {
+    margin: 0 auto; /* centre le bouton */
+}
+
+/* (Optionnel) Centrer tous les éléments dans le formulaire */
+form {
+    align-items: center;
+}
