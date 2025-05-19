@@ -48,4 +48,8 @@ return [
 'register' => "Registrar",
 'confirm_password' => "Confirmar senha",
 'back_to_login' => "Volta",
+'account_created' => "Conta criada",
+'login_error' => "Códigos incorretos",
+'success_config_updated' => "Alterações aplicadas",
+
 ];
