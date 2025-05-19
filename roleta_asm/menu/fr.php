@@ -31,7 +31,7 @@ return [
     'confirm_delete' => "Confirmer la suppression ?",
     'activate' => 'Activer',
     'deactivate' => 'Désactiver',
-    'success_status_updated' => 'Le statut du prix a été mis à jour.',
+    'success_status_updated' => 'Les modifications ont été appliquées !',
     'error_missing_id' => 'ID manquant.',
     'error_not_found' => 'Prix introuvable.',
     'error_db_error' => 'Erreur de base de données.',
@@ -49,4 +49,8 @@ return [
 'register' => "Enregistrer",
 'confirm_password' => "Confirmer le mot de passe",
 'back_to_login' => "Retour",
+'account_created' => "Compte crée",
+'login_error' => "Codes incorrects",
+
 ];
+
