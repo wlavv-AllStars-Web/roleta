@@ -22,7 +22,6 @@ $color2 = $config['colors'][1] ?? '#FF6347';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    
     $name = trim($_POST['name'] ?? '');
     $stock = intval($_POST['stock'] ?? 0);
 
@@ -42,28 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 
 <style>
+    :root {
+        --color1: <?= htmlspecialchars($color1) ?>;
+        --color2: <?= htmlspecialchars($color2) ?>;
+    }
+
     body {
         background: url('<?= htmlspecialchars($background) ?>') no-repeat center center,
-                    radial-gradient(red, black);
+                    radial-gradient(var(--color1), black);
         background-size: cover;
-    }
-
-    .btn-red {
-        background-color: <?= htmlspecialchars($color1) ?>;
-        color: white;
-    }
-
-    .btn-red:hover {
-        background-color: <?= htmlspecialchars($color1) ?>cc;
-    }
-
-    .btn-green {
-        background-color: <?= htmlspecialchars($color2) ?>;
-        color: white;
-    }
-
-    .btn-green:hover {
-        background-color: <?= htmlspecialchars($color2) ?>cc;
     }
 </style>
 
