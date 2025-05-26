@@ -2,22 +2,40 @@
 session_start();
 include 'lang.php';
 include 'db.php';
+include 'config.php';
 
-// Configuration
-$config = json_decode(file_get_contents('roleta_config.json'), true);
-$background = $config['background'] ?? 'assets/default-bg.jpg';
-$logo = $config['logo'] ?? 'assets/default-logo.png';
-$colors = $config['colors'] ?? ['#FF0000', '#FF6347'];
-
+// Détecter la langue
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'fr';
 $_SESSION['lang'] = $lang;
 setcookie('lang', $lang, time() + (86400 * 30), "/");
 
-// Chargement des prix actifs
-$stmt = $pdo->prepare("SELECT name, stock FROM roleta_prizes WHERE active = 1 AND stock > 0");
-$stmt->execute();
-$prizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Paramètres par défaut
+$background = 'assets/default-bg.jpg';
+$logo = 'uploads/uploads/logo_1747642844_9954828-logo-chat-rond-modele-silhouette-chat-illustrationle-vectoriel.jpg';
+$colors = ['#FF0000', '#FF6347'];
+$prizes = [];
 
+// Si l'utilisateur est connecté : charger ses paramètres et ses lots
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+
+    // Charger les paramètres
+    $stmt = $pdo->prepare("SELECT setting_name, setting_value FROM settings WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $settings = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+
+    $background = $settings['background'] ?? $background;
+    $logo = $settings['logo'] ?? $logo;
+    $colors = [
+        $settings['color1'] ?? $colors[0],
+        $settings['color2'] ?? $colors[1]
+    ];
+
+    // Charger les lots actifs avec du stock
+    $stmt = $pdo->prepare("SELECT name, stock FROM roleta_prizes WHERE active = 1 AND stock > 0 AND user_id = ?");
+    $stmt->execute([$user_id]);
+    $prizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 $slices = [];
 foreach ($prizes as $prize) {
@@ -27,26 +45,28 @@ foreach ($prizes as $prize) {
     }
 }
 
-// Limite totale
 shuffle($slices);
 $slices = array_slice($slices, 0, 22);
 
+// **Modification ici : Si aucun lot, créer une roue neutre**
 if (empty($slices)) {
-    include 'head.php';
-    echo "<body><div class='roleta-container'>
-    <div class='message-no-prizes'><p style='text-align:center; font-size:1.5rem; padding: 2rem;'>"
-    . __menu("no_prizes") .
-    "</p><a href='login.php?lang=$lang' class='login-button'>" . __menu("back") . "</a></div></div></body></html>";
-    exit;
+    $defaultSliceCount = 12;
+    $slices = array_fill(0, $defaultSliceCount, "–");  // texte neutre
+    $colors = array_fill(0, $defaultSliceCount, "#888888"); // gris neutre
 }
 
 include 'head.php';
 
-// Style d’arrière-plan
+// Style de fond
 $backgroundCss = $background === 'assets/default-bg.jpg'
-    ? "background: url('https://www.all-stars-motorsport.com/img/app_icons/back_roleta.png') no-repeat center center, radial-gradient(red, black); background-size: cover; filter: blur(0.5px);"
+    ? "background: url('uploads/bg_1747646083_(Customize background with admin account).jpg') no-repeat center center, radial-gradient(red, black); background-size: cover; filter: blur(0.5px);"
     : "background: url('" . htmlspecialchars($background) . "') no-repeat center center fixed; background-size: cover;";
 ?>
+
+<?php if (!isset($_SESSION['user_id'])): ?>
+    <a href="login.php?lang=<?= $lang ?>" class="login-button"><?= __menu("login") ?></a>
+<?php endif; ?>
+
 <body style="<?= $backgroundCss ?>">
 
 <form method="GET" id="lang-form">
@@ -60,14 +80,16 @@ $backgroundCss = $background === 'assets/default-bg.jpg'
     </div>
 </form>
 
-<a href="login.php?lang=<?= $lang ?>" class="login-button"><?= __menu("login") ?></a>
+<?php if (!isset($_SESSION['user_id'])): ?>
+    <a href="login.php?lang=<?= $lang ?>" class="login-button"><?= __menu("login") ?></a>
+<?php endif; ?>
 
 <audio id="spin-sound" src="assets/spin.mp3" preload="auto"></audio>
 <audio id="prize" src="assets/prise.mp3" preload="auto"></audio>
 <audio id="ambiance" src="assets/ambiance.mp3" preload="auto" loop></audio>
 
 <div class="roleta-container">
-    <div class="roleta" id="roleta" onclick="girarRoleta()"></div>
+    <div class="roleta" id="roleta" onclick="<?= empty($_SESSION['user_id']) ? 'void(0)' : 'girarRoleta()' ?>"></div>
     <div class="logo" style="background-image: url('<?= htmlspecialchars($logo) ?>'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
     <div class="ponteiro"></div>
 </div>
@@ -134,6 +156,7 @@ for(let i = 0; i < totalSlices; i++) {
     roleta.appendChild(label);
 }
 
+// Bloquer la rotation si utilisateur non connecté (pas de lots)
 function girarRoleta() {
     if (spinning) return;
     spinning = true;
@@ -169,6 +192,8 @@ function closeResult() {
     spinning = false;
 }
 </script>
-
+<?php if (isset($_SESSION['user_id'])): ?>
+    <a href="admin.php?lang=<?= $lang ?>" class="admin-button"><?= __menu("admin") ?></a>
+<?php endif; ?>
 </body>
 </html>
