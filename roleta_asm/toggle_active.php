@@ -1,6 +1,6 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin'])) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
@@ -9,15 +9,17 @@ include 'db.php';
 
 $id = $_GET['id'] ?? null;
 $lang = $_GET['lang'] ?? 'pt';
+$user_id = $_SESSION['user_id'];
 
-if (!$id) {
+if (!$id || !is_numeric($id)) {
     header("Location: admin.php?lang=$lang&error=missing_id");
     exit;
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT name FROM roleta_prizes WHERE id = ?");
-    $stmt->execute([$id]);
+    // Vérifie que ce lot appartient bien à l'utilisateur connecté
+    $stmt = $pdo->prepare("SELECT active FROM roleta_prizes WHERE id = ? AND user_id = ?");
+    $stmt->execute([$id, $user_id]);
     $prize = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$prize) {
@@ -25,24 +27,15 @@ try {
         exit;
     }
 
-    $name = $prize['name'];
+    $newStatus = $prize['active'] ? 0 : 1;
 
-    // Vérifie le statut actuel
-    $stmt = $pdo->prepare("SELECT MAX(active) FROM roleta_prizes WHERE name = ?");
-    $stmt->execute([$name]);
-    $currentStatus = $stmt->fetchColumn();
-
-    $newStatus = $currentStatus ? 0 : 1;
-
-    $update = $pdo->prepare("UPDATE roleta_prizes SET active = ? WHERE name = ?");
-    $update->execute([$newStatus, $name]);
+    $update = $pdo->prepare("UPDATE roleta_prizes SET active = ? WHERE id = ? AND user_id = ?");
+    $update->execute([$newStatus, $id, $user_id]);
 
     header("Location: admin.php?lang=$lang&success=status_updated");
     exit;
 
 } catch (PDOException $e) {
-    // Debug optionnel
-    // echo "Erreur : " . $e->getMessage();
     header("Location: admin.php?lang=$lang&error=db_error");
     exit;
 }
