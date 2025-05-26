@@ -121,10 +121,10 @@ const radius = 56;
 
 function calcSectorClipPath(angle) {
     const rad = angle * Math.PI / 180;
-    const x1 = 50 + radius * Math.cos(rad);
-    const y1 = 50 + radius * Math.sin(rad);
-    const x2 = 50 + radius * Math.cos(-rad);
-    const y2 = 50 + radius * Math.sin(-rad);
+    const x1 = 50 + totalSlices*radius * Math.cos(rad);
+    const y1 = 50 + totalSlices*radius * Math.sin(rad);
+    const x2 = 50 + totalSlices*radius * Math.cos(-rad);
+    const y2 = 50 + totalSlices*radius * Math.sin(-rad);
     return `polygon(50% 50%, ${x1}% ${y1}%, ${x2}% ${y2}%)`;
 }
 
