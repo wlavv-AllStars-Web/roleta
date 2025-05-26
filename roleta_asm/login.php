@@ -1,4 +1,4 @@
-<?php
+
 session_start();
 
 $lang = $_GET['lang'] ?? $_POST['lang'] ?? $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'pt';
