@@ -1,14 +1,18 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin'])) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
 include 'db.php';
 
+$user_id = $_SESSION['user_id'];
+
 try {
-    $pdo->exec("DELETE FROM roleta_results");
+    $stmt = $pdo->prepare("DELETE FROM roleta_results WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+
     header('Location: admin.php?reset=success');
     exit;
 } catch (PDOException $e) {
