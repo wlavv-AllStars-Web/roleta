@@ -1,61 +1,86 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin'])) {
+if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Gestion de la langue
 $lang = $_GET['lang'] ?? $_SESSION['lang'] ?? $_COOKIE['lang'] ?? 'pt';
 $_SESSION['lang'] = $lang;
 setcookie('lang', $lang, time() + (86400 * 30), "/");
 
 include 'lang.php';
 include 'db.php';
+include 'config.php';
+
+$user_id = $_SESSION['user_id'];
+
+// Charger les paramètres utilisateur depuis la base
+$settings = [];
+$stmt = $pdo->prepare("SELECT setting_name, setting_value FROM settings WHERE user_id = ?");
+$stmt->execute([$user_id]);
+foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $s) {
+    $settings[$s['setting_name']] = $s['setting_value'];
+}
+
+$background = $settings['background'] ?? $config['background'] ?? 'uploads/bg_1747646083_(Customize background with admin account).jpg';
+$logo = $settings['logo'] ?? $config['logo'] ?? 'assets/default-logo.png';
+$color1 = $settings['color1'] ?? $config['colors'][0] ?? '#FF0000';
+$color2 = $settings['color2'] ?? $config['colors'][1] ?? '#FF6347';
+
 include 'head.php';
 
-// Chargement de la configuration
-$config = json_decode(file_get_contents('roleta_config.json'), true);
-$background = $config['background'] ?? 'default-bg.jpg';
-$color1 = $config['colors'][0] ?? '#FF0000';
-$color2 = $config['colors'][1] ?? '#FF6347';
+// Historique des résultats
+$stmt = $pdo->prepare("
+    SELECT r.played_at, p.name AS prize_name
+    FROM roleta_results r
+    JOIN roleta_prizes p ON r.prize_id = p.id
+    WHERE p.user_id = ?
+    ORDER BY r.played_at DESC
+");
+$stmt->execute([$user_id]);
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Sécurité
-$results = [];
-$prizes = [];
-
-try {
-    $stmt = $pdo->query("SELECT r.played_at, p.name AS prize_name FROM roleta_results r JOIN roleta_prizes p ON r.prize_id = p.id ORDER BY r.played_at DESC");
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $stmt = $pdo->query("SELECT MIN(id) AS id, name, SUM(stock) AS total_stock, MAX(active) AS active FROM roleta_prizes GROUP BY name ORDER BY name");
-    $prizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "<p style='color:red;'>Erreur SQL : " . $e->getMessage() . "</p>";
-}
+// Lots
+$stmt = $pdo->prepare("
+    SELECT id, name, stock AS total_stock, active
+    FROM roleta_prizes
+    WHERE user_id = ?
+    ORDER BY name
+");
+$stmt->execute([$user_id]);
+$prizes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <style>
-    :root {
-        --color1: <?= htmlspecialchars($color1) ?>;
-        --color2: <?= htmlspecialchars($color2) ?>;
-    }
-
-    body {
-        background: 
-            url('<?= htmlspecialchars($background) ?>') no-repeat center center,
-            radial-gradient(var(--color1), black);
-        background-size: cover;
-    }
-
-    button i {
-        margin-right: 6px;
-    }
+:root {
+    --color1: <?= htmlspecialchars($color1) ?>;
+    --color2: <?= htmlspecialchars($color2) ?>;
+}
+body {
+    background: url('<?= htmlspecialchars($background) ?>') no-repeat center center,
+                radial-gradient(var(--color1), black);
+    background-size: cover;
+}
+button i {
+    margin-right: 6px;
+}
 </style>
 
 <body>
 <div class="login-container">
     <h2><?= __menu('admin_title') ?></h2>
+
+    <form method="GET" id="lang-form" style="margin-bottom:20px;">
+        <div class="lang-select-container">
+            <select name="lang" onchange="this.form.submit()" class="styled-select">
+                <option value="fr" <?= $lang === 'fr' ? 'selected' : '' ?>>🇫🇷 Français</option>
+                <option value="pt" <?= $lang === 'pt' ? 'selected' : '' ?>>🇵🇹 Português</option>
+                <option value="en" <?= $lang === 'en' ? 'selected' : '' ?>>🇬🇧 English</option>
+                <option value="es" <?= $lang === 'es' ? 'selected' : '' ?>>🇪🇸 Español</option>
+            </select>
+        </div>
+    </form>
 
     <?php if (isset($_GET['success'])): ?>
         <div style="color: green; margin-bottom: 10px;">
@@ -106,7 +131,7 @@ try {
             <?php foreach ($prizes as $prize): ?>
                 <tr>
                     <td><?= htmlspecialchars($prize['name']) ?></td>
-                    <td><?= $prize['total_stock'] ?></td>
+                    <td><?= (int)$prize['total_stock'] ?></td>
                     <td>
                         <a href="modifier_prix.php?id=<?= $prize['id'] ?>&lang=<?= $lang ?>">
                             <button class="btn-red"><i class="fas fa-pen"></i> <?= __menu('edit') ?></button>
@@ -132,7 +157,7 @@ try {
         </a>
     </div>
 
-    <h3><?= __menu('customize_wheel') ?? "Personnaliser la roue" ?></h3>
+    <h3><?= __menu('customize_wheel') ?></h3>
     <form action="modifier_config.php" method="post" enctype="multipart/form-data" style="margin-bottom: 40px;">
         <div class="form-row">
             <div>
@@ -158,7 +183,7 @@ try {
     </form>
 
     <div class="admin-buttons">
-        <a href="login.php?lang=<?= $lang ?>"><button class="btn-red"><i class="fas fa-sign-out-alt"></i> <?= __menu('logout') ?></button></a>
+        <a href="logout.php?lang=<?= $lang ?>"><button class="btn-red"><i class="fas fa-sign-out-alt"></i> <?= __menu('logout') ?></button></a>
         <a href="roleta.php?lang=<?= $lang ?>"><button class="btn-red"><i class="fas fa-circle-notch"></i> <?= __menu('wheel') ?></button></a>
     </div>
 </div>
