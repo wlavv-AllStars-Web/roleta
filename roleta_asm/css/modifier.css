@@ -1,0 +1,49 @@
+:root {
+    --color1: #FF0000; /* Valeur par défaut */
+    --color2: #FF6347; /* Valeur par défaut */
+}
+
+/* Style de base pour tous les boutons */
+.login-container .btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    color: white !important;
+    text-align: center;
+    display: block;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Bouton rouge (Mettre à jour) */
+.login-container .btn-red,
+.login-container input[type="submit"].btn-red {
+    background-color: var(--color1) !important;
+}
+
+/* Bouton vert (Retour) */
+.login-container .btn-green {
+    background-color: var(--color2) !important;
+}
+
+/* Effet hover pour les deux boutons */
+.login-container .btn:hover,
+.login-container input[type="submit"].btn-red:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Style spécifique pour le conteneur des boutons */
+.button-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
