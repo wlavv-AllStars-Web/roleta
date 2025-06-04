@@ -102,29 +102,26 @@ echo "<style>:root { --color1: $color1; --color2: $color2; }</style>";
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($activeAdmins as $admin): ?>
-                <tr>
-                    <td><?= (int)$admin['admin_id'] ?></td>
-                    <td><?= htmlspecialchars($admin['username']) ?></td>
-                    <td><?= $admin['active'] ? 'Ativo' : 'Inativo' ?><?= $admin['is_superadmin'] ? ' (All Stars)' : '' ?></td>
-                    <td>
-                        <form method="post" style="display:inline;">
-                            <input type="hidden" name="toggle_active" value="<?= (int)$admin['admin_id'] ?>">
-                            <button class="btn-green" type="submit" <?= ((int)$admin['admin_id'] === (int)$_SESSION['admin_id']) ? 'disabled title="Não pode ativar/desativar você mesmo"' : '' ?>>
-                                <?= $admin['active'] ? 'Desativar' : 'Ativar' ?>
-                            </button>
-                        </form>
-                        <?php if ((int)$admin['admin_id'] !== (int)$_SESSION['admin_id']): ?>
-                            <form method="post" style="display:inline;">
-                                <input type="hidden" name="delete_admin" value="<?= (int)$admin['admin_id'] ?>">
-                                <button class="btn-red" type="submit" onclick="return confirm('Remover este admin ?')">Remover</button>
-                            </form>
-                        <?php else: ?>
-                            <button class="btn-red" disabled title="Não pode remover você mesmo">Remover</button>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
+              <?php foreach ($activeAdmins as $admin): ?>
+    <?php if ((int)$admin['admin_id'] === (int)$_SESSION['admin_id']) continue; ?>
+    <tr>
+        <td><?= (int)$admin['admin_id'] ?></td>
+        <td><?= htmlspecialchars($admin['username']) ?></td>
+        <td><?= $admin['active'] ? 'Ativo' : 'Inativo' ?><?= $admin['is_superadmin'] ? ' (All Stars)' : '' ?></td>
+        <td>
+            <form method="post" style="display:inline;">
+                <input type="hidden" name="toggle_active" value="<?= (int)$admin['admin_id'] ?>">
+                <button class="btn-green" type="submit">
+                    <?= $admin['active'] ? 'Desativar' : 'Ativar' ?>
+                </button>
+            </form>
+            <form method="post" style="display:inline;">
+                <input type="hidden" name="delete_admin" value="<?= (int)$admin['admin_id'] ?>">
+                <button class="btn-red" type="submit" onclick="return confirm('Remover este admin ?')">Remover</button>
+            </form>
+            </td>
+            </tr>
+             <?php endforeach; ?>
         </tbody>
     </table>
 
