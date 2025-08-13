@@ -83,7 +83,7 @@ td {
 /* Correction ciblée pour le tableau historique */
 .history-scroll table td {
     text-align: left !important;
-    padding: 8px 12px; /* un peu plus de padding pour confort */
+    padding: 8px 147px; /* un peu plus de padding pour confort */
 }
 
 tr:hover td {
